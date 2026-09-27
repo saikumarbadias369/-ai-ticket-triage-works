@@ -27,6 +27,18 @@ Rules:
 - When can_auto_resolve is false, escalation_reason must briefly explain why a human needs to look at it.
 - suggested_response is always required: if auto-resolving, it's the reply to send the customer. If escalating, it's a short internal note for the agent picking it up.`;
 
+
+
+function extractTriageJson(data) {
+    if (data.output_text) return JSON.parse(data.output_text);
+    const outputStep = [...(data.steps || [])].reverse().find((s) => s.type === 'model_output');
+    const textBlock = outputStep?.content?.find((c) => c.type === 'text');
+    if (!textBlock) throw new Error('No model output found in Gemini response');
+    return JSON.parse(textBlock.text);
+}
+
+module.exports = { triageTicket };
+
 async function triageTicket(ticket) {
     const input = `Subject: ${ticket.subject}
 Account tier: ${ticket.account_tier}
@@ -55,8 +67,7 @@ Description: ${ticket.description}`;
         );
 
     const response = await withRetry(call);
-    const raw = response.data.output_text ?? JSON.stringify(response.data);
-    return JSON.parse(raw);
+    return extractTriageJson(response.data);
 }
 
 module.exports = { triageTicket };
