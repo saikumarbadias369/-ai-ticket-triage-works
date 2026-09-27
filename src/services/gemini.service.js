@@ -51,6 +51,9 @@ Description: ${ticket.description}`;
                 model: MODEL,
                 system_instruction: SYSTEM_INSTRUCTION,
                 input,
+                generation_config: {
+                    thinking_level: 'low'
+                },
                 response_format: {
                     type: 'text',
                     mime_type: 'application/json',
@@ -62,7 +65,7 @@ Description: ${ticket.description}`;
                     'x-goog-api-key': process.env.GEMINI_API_KEY,
                     'Content-Type': 'application/json'
                 },
-                timeout: 15000
+                timeout: 30000
             }
         );
 
