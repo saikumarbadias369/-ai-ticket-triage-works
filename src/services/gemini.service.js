@@ -2,7 +2,9 @@ const axios = require('axios');
 const { withRetry } = require('../utils/retry');
 
 const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/interactions';
-const MODEL = 'gemini-3.8-flash';
+// const MODEL = 'gemini-3.8-flash';
+// const MODEL = 'gemini-2.5-flash';
+const MODEL = 'gemini-3.5-flash-lite';
 
 const triageSchema = {
     type: 'object',
@@ -37,12 +39,12 @@ function extractTriageJson(data) {
     return JSON.parse(textBlock.text);
 }
 
-module.exports = { triageTicket };
+
 
 async function triageTicket(ticket) {
     const input = `Subject: ${ticket.subject}
-Account tier: ${ticket.account_tier}
-Description: ${ticket.description}`;
+    Account tier: ${ticket.account_tier}
+    Description: ${ticket.description}`;
 
     const call = () =>
         axios.post(
@@ -51,9 +53,9 @@ Description: ${ticket.description}`;
                 model: MODEL,
                 system_instruction: SYSTEM_INSTRUCTION,
                 input,
-                generation_config: {
-                    thinking_level: 'low'
-                },
+                // generation_config: {
+                //     thinking_level: 'low'
+                // },
                 response_format: {
                     type: 'text',
                     mime_type: 'application/json',
